@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>单十字轴万向节角加速度分析工具</title>
+<style>
+:root {
+  --bg:     #0d1117;
+  --bg2:    #161b22;
+  --bg3:    #1c2330;
+  --bd:     rgba(255,255,255,0.08);
+  --bd2:    rgba(255,255,255,0.15);
+  --t1:     #e6edf3;
+  --t2:     #8b949e;
+  --t3:     #6e7681;
+  --blue:   #58a6ff;
+  --blue2:  #1f6feb;
+  --green:  #3fb950;
+  --amber:  #d29922;
+  --red:    #f85149;
+  --purple: #bc8cff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--t1);font-family:"Microsoft YaHei","PingFang SC","Hiragino Sans GB",sans-serif;font-size:14px;min-height:100vh;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+
+/* ── header ── */
+.hdr{background:var(--bg2);border-bottom:1px solid var(--bd);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.hdr-ico{width:38px;height:38px;background:linear-gradient(135deg,#bc8cff,#d29922);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hdr-ico svg{width:20px;height:20px}
+.hdr-title{font-size:16px;font-weight:700;color:var(--t1)}
+.hdr-sub{font-size:11px;color:var(--t2);margin-top:2px}
+.hdr-badge{font-size:11px;color:var(--purple);background:rgba(188,140,255,.12);border:1px solid rgba(188,140,255,.25);border-radius:6px;padding:4px 10px;white-space:nowrap;font-family:monospace}
+
+/* ── layout ── */
+.main{display:grid;grid-template-columns:300px 1fr;min-height:calc(100vh - 68px)}
+
+/* ── sidebar ── */
+.side{background:var(--bg2);border-right:1px solid var(--bd);padding:20px 16px;display:flex;flex-direction:column;gap:20px;overflow-y:auto}
+.sec-ttl{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+
+.param-box{background:var(--bg3);border:1px solid var(--bd);border-radius:10px;padding:14px 12px}
+.param-label{font-size:12px;color:var(--t2);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.param-val{font-family:monospace;font-size:28px;font-weight:500;color:var(--blue);text-align:center;margin-bottom:6px}
+.param-unit{font-size:16px;color:var(--t2);margin-left:4px}
+
+input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:var(--bd2);outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 3px rgba(88,166,255,.22);cursor:pointer}
+.ticks{display:flex;justify-content:space-between;margin-top:6px;font-family:monospace;font-size:10px;color:var(--t3)}
+
+.preset-g{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.pbtn{background:var(--bg3);border:1px solid var(--bd);border-radius:7px;padding:7px 4px;color:var(--t2);font-family:monospace;font-size:13px;cursor:pointer;text-align:center;transition:.15s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.pbtn:hover{border-color:var(--bd2);color:var(--t1);background:#2d333b}
+.pbtn.on{border-color:var(--blue2);color:var(--blue);background:rgba(31,111,235,.15)}
+
+.stats-g{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.sc{background:var(--bg3);border:1px solid var(--bd);border-radius:8px;padding:9px 11px}
+.sc.full{grid-column:1/-1}
+.sc-n{font-size:10px;color:var(--t3);line-height:1.5;margin-bottom:4px}
+.sc-v{font-family:monospace;font-size:16px;font-weight:500;color:var(--t1)}
+.sc-v.hi{color:var(--green)}
+.sc-v.warn{color:var(--amber)}
+.sc-v.danger{color:var(--red)}
+.sc-u{font-size:11px;color:var(--t2);margin-left:2px}
+
+.fbox{background:var(--bg3);border:1px solid var(--bd);border-left:3px solid var(--purple);border-radius:0 8px 8px 0;padding:11px 13px;font-family:monospace;font-size:11px;color:var(--t2);line-height:2}
+.fbox .fh{color:var(--purple)}
+.fbox .fd{font-size:10px;color:var(--t3)}
+
+/* ── 曲线管理 ── */
+.curve-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.curve-item{background:var(--bg3);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.curve-info{flex:1;display:flex;align-items:center;gap:10px}
+.curve-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.curve-params{font-family:monospace;font-size:12px;color:var(--t1)}
+.curve-del{background:var(--bg);border:1px solid var(--bd);border-radius:5px;padding:4px 8px;color:var(--t2);font-size:11px;cursor:pointer;transition:.15s}
+.curve-del:hover{border-color:var(--red);color:var(--red);background:rgba(248,81,73,.08)}
+
+.add-curve-btn{background:var(--bg3);border:1px dashed var(--bd2);border-radius:8px;padding:10px;color:var(--blue);font-size:12px;cursor:pointer;text-align:center;transition:.15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.add-curve-btn:hover{border-color:var(--blue);background:rgba(88,166,255,.08)}
+
+/* ── chart area ── */
+.carea{padding:22px 26px;display:flex;flex-direction:column;gap:16px}
+.chart-hdr{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.ctitle{font-size:15px;font-weight:700;color:var(--t1)}
+.cdesc{font-size:12px;color:var(--t2);margin-top:3px;line-height:1.5}
+
+.cwrap{background:var(--bg2);border:1px solid var(--bd);border-radius:12px;padding:16px;flex:1;position:relative;min-height:420px;display:flex;flex-direction:column}
+canvas#mc{display:block;cursor:crosshair}
+
+.tooltip-box{position:absolute;background:#1c2330;border:1px solid rgba(255,255,255,.12);border-radius:7px;padding:9px 13px;pointer-events:none;font-family:monospace;font-size:12px;color:var(--t1);display:none;z-index:10;min-width:200px;line-height:1.8}
+.tooltip-box .tt-hd{font-size:11px;color:var(--t2);margin-bottom:4px;border-bottom:1px solid var(--bd);padding-bottom:4px}
+.tooltip-box .tt-row{display:flex;align-items:center;gap:6px}
+.tt-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+@media(max-width:900px){
+  .main{grid-template-columns:1fr}
+  .side{border-right:none;border-bottom:1px solid var(--bd)}
+}
+@media(max-width:600px){
+  .hdr{padding:10px 14px;gap:8px}
+  .hdr-title{font-size:14px}
+  .hdr-sub{font-size:10px}
+  .hdr-badge{font-size:10px;padding:3px 8px}
+  .hdr-ico{width:32px;height:32px}
+  .side{padding:14px 12px;gap:14px}
+  .param-val{font-size:24px}
+  .preset-g{grid-template-columns:repeat(3,1fr);gap:5px}
+  .pbtn{padding:8px 4px;font-size:14px}
+  .carea{padding:14px 12px;gap:12px}
+  input[type=range]::-webkit-slider-thumb{width:22px;height:22px}
+}
+user-select: none
+</style>
+</head>
+<body>
+
+<!-- header -->
+<div class="hdr">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="hdr-ico">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2v4m0 12v4M2 12h4m12 0h4"/>
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M18.36 5.64l-2.83 2.83m-7.07 7.07L5.64 18.36m12.72 0l-2.83-2.83M8.46 8.46L5.64 5.64"/>
+      </svg>
+    </div>
+    <div>
+      <div class="hdr-title">单十字轴万向节角加速度分析工具</div>
+      <div class="hdr-sub">《汽车设计》第6版 · 第四章 图4-18 · 从动叉轴角加速度曲线</div>
+    </div>
+  </div>
+  <div class="hdr-badge">完全离线 · 零依赖 · 浏览器运行</div>
+</div>
+
+<!-- main -->
+<div class="main">
+
+  <!-- sidebar -->
+  <div class="side">
+
+    <div>
+      <div class="sec-ttl">主动轴转速 n</div>
+      <div class="param-box">
+        <div class="param-label">
+          <span>转速（rpm）</span>
+        </div>
+        <div class="param-val"><span id="nval">1000</span><span class="param-unit">rpm</span></div>
+        <input type="range" id="nslider" min="100" max="3000" step="50" value="1000">
+        <div class="ticks"><span>100</span><span>1000</span><span>2000</span><span>3000</span></div>
+      </div>
+      <div class="preset-g" id="npg">
+        <button class="pbtn" data-v="500">500</button>
+        <button class="pbtn on" data-v="1000">1000</button>
+        <button class="pbtn" data-v="1500">1500</button>
+        <button class="pbtn" data-v="2000">2000</button>
+        <button class="pbtn" data-v="2500">2500</button>
+        <button class="pbtn" data-v="3000">3000</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-ttl">万向节夹角 α</div>
+      <div class="param-box">
+        <div class="param-label">
+          <span>α（主从动轴夹角）</span>
+        </div>
+        <div class="param-val"><span id="aval">15</span><span class="param-unit">°</span></div>
+        <input type="range" id="aslider" min="0" max="30" step="1" value="15">
+        <div class="ticks"><span>0°</span><span>5°</span><span>10°</span><span>15°</span><span>20°</span><span>25°</span><span>30°</span></div>
+      </div>
+      <div class="preset-g" id="apg">
+        <button class="pbtn" data-v="0">0°</button>
+        <button class="pbtn" data-v="5">5°</button>
+        <button class="pbtn" data-v="10">10°</button>
+        <button class="pbtn on" data-v="15">15°</button>
+        <button class="pbtn" data-v="20">20°</button>
+        <button class="pbtn" data-v="25">25°</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-ttl">曲线管理</div>
+      <div class="curve-list" id="curve-list"></div>
+      <div class="add-curve-btn" id="add-curve-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        <span>添加当前参数曲线</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-ttl">统计数据（当前参数）</div>
+      <div class="stats-g">
+        <div class="sc">
+          <div class="sc-n">最大角加速度</div>
+          <div class="sc-v hi" id="sv-max">0</div>
+        </div>
+        <div class="sc">
+          <div class="sc-n">最小角加速度</div>
+          <div class="sc-v warn" id="sv-min">0</div>
+        </div>
+        <div class="sc">
+          <div class="sc-n">角速度 ω₁</div>
+          <div class="sc-v" id="sv-w1">0<span class="sc-u">rad/s</span></div>
+        </div>
+        <div class="sc">
+          <div class="sc-n">周期次数</div>
+          <div class="sc-v" id="sv-pk">4<span class="sc-u">次/转</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-ttl">公式 4-7</div>
+      <div class="fbox">
+        <div class="fd">从动轴角加速度：</div>
+        <div class="fh">ε₂ = ω₁²·sinα·cosα·sin(2φ₁)</div>
+        <div class="fh" style="padding-left:20px">─────────────</div>
+        <div class="fh" style="padding-left:20px">(1-sin²α·sin²φ₁)²</div>
+        <div class="fd" style="margin-top:8px">
+          其中：<br>
+          ω₁ = 2πn/60 (rad/s)<br>
+          φ₁ = 主动轴转角<br>
+          α = 万向节夹角
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- chart area -->
+  <div class="carea">
+    <div class="chart-hdr">
+      <div>
+        <div class="ctitle">从动叉轴角加速度曲线（图4-18）</div>
+        <div class="cdesc">横坐标：主动叉轴转角 φ₁ | 纵坐标：从动叉轴角加速度 ε₂ | 支持多条曲线叠加显示</div>
+      </div>
+    </div>
+    <div class="cwrap" id="cwrap">
+      <canvas id="mc"></canvas>
+      <div class="tooltip-box" id="ttbox">
+        <div class="tt-hd" id="tt-hd"></div>
+        <div id="tt-body"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+//  全局配置
+// ════════════════════════════════════════════════
+const SAMPLES = 720;
+const GRID_COLOR = 'rgba(255,255,255,0.06)';
+const AXIS_COLOR = '#8b949e';
+const TICK_COLOR = '#6e7681';
+const ZERO_COLOR = 'rgba(255,255,255,0.15)';
+const HOVER_LINE = 'rgba(88,166,255,0.5)';
+
+// 曲线颜色池
+const CURVE_COLORS = [
+  '#58a6ff', // blue
+  '#3fb950', // green
+  '#d29922', // amber
+  '#bc8cff', // purple
+  '#f85149', // red
+  '#56d4dd', // cyan
+  '#da3633', // dark red
+  '#f778ba', // pink
+];
+
+// ════════════════════════════════════════════════
+//  状态管理
+// ════════════════════════════════════════════════
+let currentN = 1000;
+let currentAlpha = 15;
+let currentOmega1 = 0;
+let currentSeries = { xs: [], ys: [] };
+
+// 曲线列表：每条曲线包含 { alpha, n, series, color }
+let curves = [];
+let nextColorIndex = 0;
+
+// 鼠标交互
+let hoverActive = false;
+let mouseX = -1;
+
+const canvas = document.getElementById('mc');
+const ctx = canvas.getContext('2d');
+
+// ════════════════════════════════════════════════
+//  核心计算
+// ════════════════════════════════════════════════
+function computeAngularAcceleration(alphaDeg, n) {
+  const alphaRad = alphaDeg * Math.PI / 180;
+  const omega1 = (2 * Math.PI * n) / 60;
+  currentOmega1 = omega1;
+  
+  const xs = [];
+  const ys = [];
+  
+  for (let i = 0; i < SAMPLES; i++) {
+    const phi = (i / SAMPLES) * 2 * Math.PI;
+    const phiDeg = phi * 180 / Math.PI;
+    
+    const sinA = Math.sin(alphaRad);
+    const cosA = Math.cos(alphaRad);
+    const sinP = Math.sin(phi);
+    const sin2P = Math.sin(2 * phi);
+    
+    const denom = 1 - sinA * sinA * sinP * sinP;
+    const epsilon2 = (omega1 * omega1 * sinA * cosA * sin2P) / (denom * denom);
+    
+    xs.push(phiDeg);
+    ys.push(epsilon2);
+  }
+  
+  return { xs, ys };
+}
+
+// ════════════════════════════════════════════════
+//  曲线管理
+// ════════════════════════════════════════════════
+function addCurve() {
+  const color = CURVE_COLORS[nextColorIndex % CURVE_COLORS.length];
+  nextColorIndex++;
+  
+  const series = computeAngularAcceleration(currentAlpha, currentN);
+  curves.push({
+    alpha: currentAlpha,
+    n: currentN,
+    series: series,
+    color: color,
+    id: Date.now()
+  });
+  
+  updateCurveList();
+  draw();
+}
+
+function removeCurve(id) {
+  curves = curves.filter(c => c.id !== id);
+  updateCurveList();
+  draw();
+}
+
+function updateCurveList() {
+  const list = document.getElementById('curve-list');
+  list.innerHTML = curves.map(c => `
+    <div class="curve-item">
+      <div class="curve-info">
+        <div class="curve-dot" style="background:${c.color}"></div>
+        <div class="curve-params">α=${c.alpha}° | n=${c.n}rpm</div>
+      </div>
+      <button class="curve-del" onclick="removeCurve(${c.id})">删除</button>
+    </div>
+  `).join('');
+}
+
+// ════════════════════════════════════════════════
+//  Canvas调整
+// ════════════════════════════════════════════════
+function resize() {
+  const wrap = document.getElementById('cwrap');
+  const W = wrap.clientWidth - 32;
+  const H = Math.max(420, wrap.clientHeight - 32);
+  canvas.width = W;
+  canvas.height = H;
+  draw();
+}
+
+// ════════════════════════════════════════════════
+//  计算合适的Y轴刻度间隔
+// ════════════════════════════════════════════════
+function getNiceYStep(range) {
+  // 目标：Y轴显示5-8个刻度
+  const rawStep = range / 6;
+  const magnitude = Math.pow(10, Math.floor(Math.log10(rawStep)));
+  const normalized = rawStep / magnitude;
+  
+  let niceStep;
+  if (normalized < 1.5) niceStep = 1;
+  else if (normalized < 3) niceStep = 2;
+  else if (normalized < 7) niceStep = 5;
+  else niceStep = 10;
+  
+  return niceStep * magnitude;
+}
+
+// ════════════════════════════════════════════════
+//  绘图
+// ════════════════════════════════════════════════
+function draw() {
+  const W = canvas.width;
+  const H = canvas.height;
+  if (W === 0 || H === 0) return;
+  
+  ctx.clearRect(0, 0, W, H);
+  
+  // ── 边距 ──
+  const ml = 70, mr = 30, mt = 30, mb = 50;
+  const pw = W - ml - mr;
+  const ph = H - mt - mb;
+  
+  // ── 数据范围 ──
+  const xmin = 0, xmax = 360;
+  
+  // 计算所有曲线的Y范围
+  let ymin = 0, ymax = 0;
+  if (curves.length > 0) {
+    ymin = Math.min(...curves.flatMap(c => c.series.ys));
+    ymax = Math.max(...curves.flatMap(c => c.series.ys));
+  }
+  if (currentSeries.ys.length > 0) {
+    ymin = Math.min(ymin, ...currentSeries.ys);
+    ymax = Math.max(ymax, ...currentSeries.ys);
+  }
+  
+  const yrange = Math.max(Math.abs(ymin), Math.abs(ymax));
+  ymin = -yrange * 1.1;
+  ymax = yrange * 1.1;
+  
+  // 计算合适的Y轴刻度间隔
+  const yStep = getNiceYStep(ymax - ymin);
+  
+  // ── 坐标转换 ──
+  const px = x => ml + ((x - xmin) / (xmax - xmin)) * pw;
+  const py = y => mt + ph - ((y - ymin) / (ymax - ymin)) * ph;
+  
+  // ── 网格 ──
+  ctx.strokeStyle = GRID_COLOR;
+  ctx.lineWidth = 1;
+  
+  // 横向网格（Y轴刻度线）
+  for (let y = Math.ceil(ymin / yStep) * yStep; y <= ymax; y += yStep) {
+    const cy = py(y);
+    ctx.beginPath();
+    ctx.moveTo(ml, cy);
+    ctx.lineTo(ml + pw, cy);
+    ctx.stroke();
+  }
+  
+  // 纵向网格（X轴刻度线）
+  for (let x = 0; x <= 360; x += 60) {
+    const cx = px(x);
+    ctx.beginPath();
+    ctx.moveTo(cx, mt);
+    ctx.lineTo(cx, mt + ph);
+    ctx.stroke();
+  }
+  
+  // ── 零线 ──
+  const y0 = py(0);
+  ctx.strokeStyle = ZERO_COLOR;
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([5, 3]);
+  ctx.beginPath();
+  ctx.moveTo(ml, y0);
+  ctx.lineTo(ml + pw, y0);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  
+  // ── 绘制所有已添加的曲线 ──
+  curves.forEach(curve => {
+    ctx.strokeStyle = curve.color;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    curve.series.xs.forEach((x, i) => {
+      const cx = px(x);
+      const cy = py(curve.series.ys[i]);
+      if (i === 0) ctx.moveTo(cx, cy);
+      else ctx.lineTo(cx, cy);
+    });
+    ctx.stroke();
+  });
+  
+  // ── 当前参数曲线（虚线显示，表示预览） ──
+  if (currentSeries.xs.length > 0) {
+    ctx.strokeStyle = 'rgba(88,166,255,0.5)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]);
+    ctx.beginPath();
+    currentSeries.xs.forEach((x, i) => {
+      const cx = px(x);
+      const cy = py(currentSeries.ys[i]);
+      if (i === 0) ctx.moveTo(cx, cy);
+      else ctx.lineTo(cx, cy);
+    });
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  
+  // ── 悬停线 ──
+  if (hoverActive && mouseX >= ml && mouseX <= ml + pw) {
+    ctx.strokeStyle = HOVER_LINE;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 2]);
+    ctx.beginPath();
+    ctx.moveTo(mouseX, mt);
+    ctx.lineTo(mouseX, mt + ph);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  
+  // ── X轴刻度 ──
+  ctx.fillStyle = TICK_COLOR;
+  ctx.font = '11px monospace';
+  ctx.textAlign = 'center';
+  for (let x = 0; x <= 360; x += 60) {
+    const cx = px(x);
+    ctx.fillText(x + '°', cx, mt + ph + 20);
+  }
+  
+  // ── Y轴刻度 ──
+  ctx.textAlign = 'right';
+  for (let y = Math.ceil(ymin / yStep) * yStep; y <= ymax; y += yStep) {
+    const cy = py(y);
+    const lbl = Math.abs(y) < 1e-9 ? '0' : y.toFixed(ymax < 10 ? 1 : 0);
+    ctx.fillText(lbl, ml - 8, cy + 4);
+  }
+  
+  // ── 轴标题 ──
+  ctx.fillStyle = AXIS_COLOR;
+  ctx.font = '12px "Microsoft YaHei",sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('主动轴转角  φ₁ / °', ml + pw / 2, H - 6);
+  
+  ctx.save();
+  ctx.translate(13, mt + ph / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.textAlign = 'center';
+  ctx.fillText('从动轴角加速度  ε₂ / (rad/s²)', 0, 0);
+  ctx.restore();
+  
+  // 存储坐标信息（供tooltip使用）
+  canvas._chart = { ml, mr, mt, mb, pw, ph, px, py, xmin, xmax, ymin, ymax, W, H };
+}
+
+// ════════════════════════════════════════════════
+//  悬停 Tooltip
+// ════════════════════════════════════════════════
+function interpY(series, x01) {
+  const { xs, ys } = series;
+  const xVal = x01 * 360;
+  let lo = 0, hi = xs.length - 1;
+  while (hi - lo > 1) {
+    const mid = (lo + hi) >> 1;
+    if (xs[mid] <= xVal) lo = mid; else hi = mid;
+  }
+  if (lo === hi) return ys[lo];
+  const t = (xVal - xs[lo]) / (xs[hi] - xs[lo]);
+  return ys[lo] + t * (ys[hi] - ys[lo]);
+}
+
+canvas.addEventListener('mousemove', e => {
+  const ch = canvas._chart;
+  if (!ch) return;
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  mouseX = mx;
+  hoverActive = (mx >= ch.ml && mx <= ch.ml + ch.pw && my >= ch.mt && my <= ch.mt + ch.ph);
+  draw();
+  
+  if (!hoverActive) {
+    document.getElementById('ttbox').style.display = 'none';
+    return;
+  }
+  
+  const x01 = (mx - ch.ml) / ch.pw;
+  const xVal = x01 * 360;
+  
+  const tt = document.getElementById('ttbox');
+  const hd = document.getElementById('tt-hd');
+  const bd = document.getElementById('tt-body');
+  
+  hd.textContent = 'φ₁ = ' + xVal.toFixed(1) + '°';
+  
+  // 显示所有曲线的值
+  let html = '';
+  curves.forEach(curve => {
+    const yVal = interpY(curve.series, x01);
+    html += `<div class="tt-row"><div class="tt-dot" style="background:${curve.color}"></div>α=${curve.alpha}°: <b>${yVal.toFixed(2)}</b> rad/s²</div>`;
+  });
+  
+  // 显示当前预览曲线的值
+  if (currentSeries.xs.length > 0) {
+    const yVal = interpY(currentSeries, x01);
+    html += `<div class="tt-row"><div class="tt-dot" style="background:rgba(88,166,255,0.5)"></div>当前: <b>${yVal.toFixed(2)}</b> rad/s²</div>`;
+  }
+  
+  bd.innerHTML = html;
+  
+  // 定位 tooltip
+  const wrapRect = document.getElementById('cwrap').getBoundingClientRect();
+  const tx = e.clientX - wrapRect.left + 14;
+  const ty = e.clientY - wrapRect.top - 40;
+  const ttW = 220;
+  const finalX = tx + ttW > wrapRect.width - 16 ? tx - ttW - 24 : tx;
+  tt.style.left = finalX + 'px';
+  tt.style.top = Math.max(4, ty) + 'px';
+  tt.style.display = 'block';
+});
+
+canvas.addEventListener('mouseleave', () => {
+  hoverActive = false;
+  mouseX = -1;
+  document.getElementById('ttbox').style.display = 'none';
+  draw();
+});
+
+// ════════════════════════════════════════════════
+//  统计计算
+// ════════════════════════════════════════════════
+function updateStats() {
+  const { ys } = currentSeries;
+  const maxV = Math.max(...ys);
+  const minV = Math.min(...ys);
+  
+  document.getElementById('sv-max').textContent = maxV.toFixed(2);
+  document.getElementById('sv-min').textContent = minV.toFixed(2);
+  document.getElementById('sv-w1').textContent = currentOmega1.toFixed(2);
+  document.getElementById('sv-pk').textContent = currentAlpha === 0 ? '0' : '4';
+}
+
+// ════════════════════════════════════════════════
+//  主更新
+// ════════════════════════════════════════════════
+function update() {
+  currentSeries = computeAngularAcceleration(currentAlpha, currentN);
+  updateStats();
+  draw();
+}
+
+// ════════════════════════════════════════════════
+//  事件绑定
+// ════════════════════════════════════════════════
+document.getElementById('nslider').addEventListener('input', e => {
+  currentN = +e.target.value;
+  document.getElementById('nval').textContent = currentN;
+  document.querySelectorAll('#npg .pbtn').forEach(b => b.classList.toggle('on', +b.dataset.v === currentN));
+  update();
+});
+
+document.getElementById('npg').addEventListener('click', e => {
+  const b = e.target.closest('.pbtn');
+  if (b) {
+    currentN = +b.dataset.v;
+    document.getElementById('nval').textContent = currentN;
+    document.getElementById('nslider').value = currentN;
+    document.querySelectorAll('#npg .pbtn').forEach(btn => btn.classList.toggle('on', btn === b));
+    update();
+  }
+});
+
+document.getElementById('aslider').addEventListener('input', e => {
+  currentAlpha = +e.target.value;
+  document.getElementById('aval').textContent = currentAlpha;
+  document.querySelectorAll('#apg .pbtn').forEach(b => b.classList.toggle('on', +b.dataset.v === currentAlpha));
+  update();
+});
+
+document.getElementById('apg').addEventListener('click', e => {
+  const b = e.target.closest('.pbtn');
+  if (b) {
+    currentAlpha = +b.dataset.v;
+    document.getElementById('aval').textContent = currentAlpha;
+    document.getElementById('aslider').value = currentAlpha;
+    document.querySelectorAll('#apg .pbtn').forEach(btn => btn.classList.toggle('on', btn === b));
+    update();
+  }
+});
+
+document.getElementById('add-curve-btn').addEventListener('click', addCurve);
+
+window.addEventListener('resize', resize);
+
+// ════════════════════════════════════════════════
+//  初始化
+// ════════════════════════════════════════════════
+window.addEventListener('load', () => {
+  update();
+  resize();
+});
+</script>
+<script>
+// 阻止双击缩放（移动端兼容优化）
+let lastTouchEnd = 0;
+document.addEventListener('touchend', function(e) {
+  const now = Date.now();
+  if (now - lastTouchEnd <= 300) {
+    e.preventDefault();
+  }
+  lastTouchEnd = now;
+}, false);
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+if (e.key === 'F12' || 
+(e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+(e.ctrlKey && e.key === 'U') ||
+(e.ctrlKey && e.key === 'S')) {
+e.preventDefault();
+return false;
+}
+});
+
+</script>
+<script>
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('keydown', e => {
+    if (e.key === 'F12' || 
+        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+        (e.ctrlKey && e.key === 'U') ||
+        (e.ctrlKey && e.key === 'S')) {
+      e.preventDefault();
+      return false;
+    }
+  });
+</script>
+
+</body>
+</html>
