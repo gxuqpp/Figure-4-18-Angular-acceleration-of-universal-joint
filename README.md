@@ -1,0 +1,1 @@
+# Figure-4-18-Angular-acceleration-of-universal-joint
