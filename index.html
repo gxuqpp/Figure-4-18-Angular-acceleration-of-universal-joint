@@ -221,7 +221,7 @@ user-select: none
         <div class="fd">从动轴角加速度（式4-7）：</div>
         <div class="fh">ε₂ = ω₁²·cosα·sin²α·sin2φ₁</div>
         <div class="fh" style="padding-left:20px">──────────────────</div>
-        <div class="fh" style="padding-left:20px">(1 - sin²α·cos²φ₁)²</div>
+        <div class="fh" style="padding-left:20px">(1 - sin²α·sin²φ₁)²</div>
         <div class="fd" style="margin-top:8px">
           其中：<br>
           ω₁ = 2πn/60 (rad/s)<br>
@@ -312,9 +312,10 @@ function computeAngularAcceleration(alphaDeg, n) {
     const sinA = Math.sin(alphaRad);
     const cosA = Math.cos(alphaRad);
     const cosP = Math.cos(phi);
+    const sinP = Math.sin(phi);
     const sin2P = Math.sin(2 * phi);
     
-    const denom = 1 - sinA * sinA * cosP * cosP;
+    const denom = 1 - sinA * sinA * sinP * sinP;
     const epsilon2 = (omega1 * omega1 * cosA * sinA * sinA * sin2P) / (denom * denom);
     
     xs.push(phiDeg);
