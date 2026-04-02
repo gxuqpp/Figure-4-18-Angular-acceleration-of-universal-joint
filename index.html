@@ -24,74 +24,74 @@
   --purple: #bc8cff;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--t1);font-family:"Microsoft YaHei","PingFang SC","Hiragino Sans GB",sans-serif;font-size:14px;min-height:100vh;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--t1);font-family:"Microsoft YaHei","PingFang SC","Hiragino Sans GB",sans-serif;font-size:16px;min-height:100vh;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
 
 /* ── header ── */
 .hdr{background:var(--bg2);border-bottom:1px solid var(--bd);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .hdr-ico{width:38px;height:38px;background:linear-gradient(135deg,#bc8cff,#d29922);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .hdr-ico svg{width:20px;height:20px}
-.hdr-title{font-size:16px;font-weight:700;color:var(--t1)}
-.hdr-sub{font-size:11px;color:var(--t2);margin-top:2px}
-.hdr-badge{font-size:11px;color:var(--purple);background:rgba(188,140,255,.12);border:1px solid rgba(188,140,255,.25);border-radius:6px;padding:4px 10px;white-space:nowrap;font-family:monospace}
+.hdr-title{font-size:19px;font-weight:700;color:var(--t1)}
+.hdr-sub{font-size:13px;color:var(--t2);margin-top:2px}
+.hdr-badge{font-size:13px;color:var(--purple);background:rgba(188,140,255,.12);border:1px solid rgba(188,140,255,.25);border-radius:6px;padding:4px 10px;white-space:nowrap;font-family:monospace}
 
 /* ── layout ── */
 .main{display:grid;grid-template-columns:300px 1fr;min-height:calc(100vh - 68px)}
 
 /* ── sidebar ── */
 .side{background:var(--bg2);border-right:1px solid var(--bd);padding:20px 16px;display:flex;flex-direction:column;gap:20px;overflow-y:auto}
-.sec-ttl{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.sec-ttl{font-size:13px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
 
 .param-box{background:var(--bg3);border:1px solid var(--bd);border-radius:10px;padding:14px 12px}
-.param-label{font-size:12px;color:var(--t2);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
-.param-val{font-family:monospace;font-size:28px;font-weight:500;color:var(--blue);text-align:center;margin-bottom:6px}
-.param-unit{font-size:16px;color:var(--t2);margin-left:4px}
+.param-label{font-size:14px;color:var(--t2);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.param-val{font-family:monospace;font-size:34px;font-weight:500;color:var(--blue);text-align:center;margin-bottom:6px}
+.param-unit{font-size:19px;color:var(--t2);margin-left:4px}
 
 input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:var(--bd2);outline:none;cursor:pointer}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 3px rgba(88,166,255,.22);cursor:pointer}
-.ticks{display:flex;justify-content:space-between;margin-top:6px;font-family:monospace;font-size:10px;color:var(--t3)}
+.ticks{display:flex;justify-content:space-between;margin-top:6px;font-family:monospace;font-size:12px;color:var(--t3)}
 
 .preset-g{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
-.pbtn{background:var(--bg3);border:1px solid var(--bd);border-radius:7px;padding:7px 4px;color:var(--t2);font-family:monospace;font-size:13px;cursor:pointer;text-align:center;transition:.15s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.pbtn{background:var(--bg3);border:1px solid var(--bd);border-radius:7px;padding:7px 4px;color:var(--t2);font-family:monospace;font-size:15px;cursor:pointer;text-align:center;transition:.15s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .pbtn:hover{border-color:var(--bd2);color:var(--t1);background:#2d333b}
 .pbtn.on{border-color:var(--blue2);color:var(--blue);background:rgba(31,111,235,.15)}
 
 .stats-g{display:grid;grid-template-columns:1fr 1fr;gap:7px}
 .sc{background:var(--bg3);border:1px solid var(--bd);border-radius:8px;padding:9px 11px}
 .sc.full{grid-column:1/-1}
-.sc-n{font-size:10px;color:var(--t3);line-height:1.5;margin-bottom:4px}
-.sc-v{font-family:monospace;font-size:16px;font-weight:500;color:var(--t1)}
+.sc-n{font-size:12px;color:var(--t3);line-height:1.5;margin-bottom:4px}
+.sc-v{font-family:monospace;font-size:18px;font-weight:500;color:var(--t1)}
 .sc-v.hi{color:var(--green)}
 .sc-v.warn{color:var(--amber)}
 .sc-v.danger{color:var(--red)}
-.sc-u{font-size:11px;color:var(--t2);margin-left:2px}
+.sc-u{font-size:13px;color:var(--t2);margin-left:2px}
 
-.fbox{background:var(--bg3);border:1px solid var(--bd);border-left:3px solid var(--purple);border-radius:0 8px 8px 0;padding:11px 13px;font-family:monospace;font-size:11px;color:var(--t2);line-height:2}
+.fbox{background:var(--bg3);border:1px solid var(--bd);border-left:3px solid var(--purple);border-radius:0 8px 8px 0;padding:11px 13px;font-family:monospace;font-size:14px;color:var(--t2);line-height:2}
 .fbox .fh{color:var(--purple)}
-.fbox .fd{font-size:10px;color:var(--t3)}
+.fbox .fd{font-size:12px;color:var(--t3)}
 
 /* ── 曲线管理 ── */
 .curve-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
 .curve-item{background:var(--bg3);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px}
 .curve-info{flex:1;display:flex;align-items:center;gap:10px}
 .curve-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
-.curve-params{font-family:monospace;font-size:12px;color:var(--t1)}
-.curve-del{background:var(--bg);border:1px solid var(--bd);border-radius:5px;padding:4px 8px;color:var(--t2);font-size:11px;cursor:pointer;transition:.15s}
+.curve-params{font-family:monospace;font-size:14px;color:var(--t1)}
+.curve-del{background:var(--bg);border:1px solid var(--bd);border-radius:5px;padding:4px 8px;color:var(--t2);font-size:13px;cursor:pointer;transition:.15s}
 .curve-del:hover{border-color:var(--red);color:var(--red);background:rgba(248,81,73,.08)}
 
-.add-curve-btn{background:var(--bg3);border:1px dashed var(--bd2);border-radius:8px;padding:10px;color:var(--blue);font-size:12px;cursor:pointer;text-align:center;transition:.15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.add-curve-btn{background:var(--bg3);border:1px dashed var(--bd2);border-radius:8px;padding:10px;color:var(--blue);font-size:14px;cursor:pointer;text-align:center;transition:.15s;display:flex;align-items:center;justify-content:center;gap:6px}
 .add-curve-btn:hover{border-color:var(--blue);background:rgba(88,166,255,.08)}
 
 /* ── chart area ── */
 .carea{padding:22px 26px;display:flex;flex-direction:column;gap:16px}
 .chart-hdr{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px}
-.ctitle{font-size:15px;font-weight:700;color:var(--t1)}
-.cdesc{font-size:12px;color:var(--t2);margin-top:3px;line-height:1.5}
+.ctitle{font-size:17px;font-weight:700;color:var(--t1)}
+.cdesc{font-size:14px;color:var(--t2);margin-top:3px;line-height:1.5}
 
 .cwrap{background:var(--bg2);border:1px solid var(--bd);border-radius:12px;padding:16px;flex:1;position:relative;min-height:420px;display:flex;flex-direction:column}
 canvas#mc{display:block;cursor:crosshair}
 
-.tooltip-box{position:absolute;background:#1c2330;border:1px solid rgba(255,255,255,.12);border-radius:7px;padding:9px 13px;pointer-events:none;font-family:monospace;font-size:12px;color:var(--t1);display:none;z-index:10;min-width:200px;line-height:1.8}
-.tooltip-box .tt-hd{font-size:11px;color:var(--t2);margin-bottom:4px;border-bottom:1px solid var(--bd);padding-bottom:4px}
+.tooltip-box{position:absolute;background:#1c2330;border:1px solid rgba(255,255,255,.12);border-radius:7px;padding:9px 13px;pointer-events:none;font-family:monospace;font-size:14px;color:var(--t1);display:none;z-index:10;min-width:200px;line-height:1.8}
+.tooltip-box .tt-hd{font-size:13px;color:var(--t2);margin-bottom:4px;border-bottom:1px solid var(--bd);padding-bottom:4px}
 .tooltip-box .tt-row{display:flex;align-items:center;gap:6px}
 .tt-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 
@@ -218,10 +218,10 @@ user-select: none
     <div>
       <div class="sec-ttl">公式 4-7</div>
       <div class="fbox">
-        <div class="fd">从动轴角加速度：</div>
-        <div class="fh">ε₂ = ω₁²·sinα·cosα·sin(2φ₁)</div>
-        <div class="fh" style="padding-left:20px">─────────────</div>
-        <div class="fh" style="padding-left:20px">(1-sin²α·sin²φ₁)²</div>
+        <div class="fd">从动轴角加速度（式4-7）：</div>
+        <div class="fh">ε₂ = ω₁²·cosα·sin²α·sin2φ₁</div>
+        <div class="fh" style="padding-left:20px">──────────────────</div>
+        <div class="fh" style="padding-left:20px">(1 - sin²α·cos²φ₁)²</div>
         <div class="fd" style="margin-top:8px">
           其中：<br>
           ω₁ = 2πn/60 (rad/s)<br>
@@ -311,11 +311,11 @@ function computeAngularAcceleration(alphaDeg, n) {
     
     const sinA = Math.sin(alphaRad);
     const cosA = Math.cos(alphaRad);
-    const sinP = Math.sin(phi);
+    const cosP = Math.cos(phi);
     const sin2P = Math.sin(2 * phi);
     
-    const denom = 1 - sinA * sinA * sinP * sinP;
-    const epsilon2 = (omega1 * omega1 * sinA * cosA * sin2P) / (denom * denom);
+    const denom = 1 - sinA * sinA * cosP * cosP;
+    const epsilon2 = (omega1 * omega1 * cosA * sinA * sinA * sin2P) / (denom * denom);
     
     xs.push(phiDeg);
     ys.push(epsilon2);
@@ -510,7 +510,7 @@ function draw() {
   
   // ── X轴刻度 ──
   ctx.fillStyle = TICK_COLOR;
-  ctx.font = '11px monospace';
+  ctx.font = '13px monospace';
   ctx.textAlign = 'center';
   for (let x = 0; x <= 360; x += 60) {
     const cx = px(x);
@@ -519,6 +519,7 @@ function draw() {
   
   // ── Y轴刻度 ──
   ctx.textAlign = 'right';
+  ctx.font = '13px monospace';
   for (let y = Math.ceil(ymin / yStep) * yStep; y <= ymax; y += yStep) {
     const cy = py(y);
     const lbl = Math.abs(y) < 1e-9 ? '0' : y.toFixed(ymax < 10 ? 1 : 0);
@@ -527,7 +528,7 @@ function draw() {
   
   // ── 轴标题 ──
   ctx.fillStyle = AXIS_COLOR;
-  ctx.font = '12px "Microsoft YaHei",sans-serif';
+  ctx.font = '14px "Microsoft YaHei",sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText('主动轴转角  φ₁ / °', ml + pw / 2, H - 6);
   
